@@ -1,6 +1,7 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { REEL_SERVICE_URL } from "@/lib/service";
 
 type CaptionChoice = "simple" | "none" | "styled";
 type MusicChoice =
@@ -84,6 +85,39 @@ const deadlineLabels: Record<DeadlineChoice, string> = {
   "24-hours": "Within 24 hours",
 };
 
+function formatBriefForClipboard(brief: BriefState, assessment: AssessmentResult) {
+  const bodySeconds = Math.max(
+    1,
+    brief.outputSeconds - brief.hookSeconds - brief.closeSeconds,
+  );
+  const lines = [
+    "porQpine vertical-edit brief",
+    "",
+    `Supplied footage: ${brief.footageMinutes} minutes`,
+    `Finished cut: ${brief.outputSeconds} seconds`,
+    `Timeline: ${brief.hookSeconds}s hook / ${bodySeconds}s core / ${brief.closeSeconds}s close`,
+    `Captions: ${captionLabels[brief.captions]}`,
+    `Music: ${musicLabels[brief.music]}`,
+    `Requested timing: ${deadlineLabels[brief.deadline]}`,
+    `Creative direction: ${brief.creativeDirection.trim() || "Not supplied"}`,
+    `Footage ready: ${brief.footageReady ? "Yes" : "No"}`,
+    `Caption copy ready: ${brief.captionCopyReady ? "Yes" : "No"}`,
+    `Music rights confirmed: ${brief.musicRightsConfirmed ? "Yes" : "No"}`,
+    "",
+    `Scope result: ${assessment.fitLabel}`,
+  ];
+
+  if (assessment.missingInputs.length) {
+    lines.push(`Still needed: ${assessment.missingInputs.join("; ")}`);
+  }
+  if (assessment.risks.length) {
+    lines.push(`Scope flags: ${assessment.risks.join("; ")}`);
+  }
+
+  lines.push("", `Service: ${REEL_SERVICE_URL}`);
+  return lines.join("\n");
+}
+
 function ChoiceCard<T extends string>({
   name,
   value,
@@ -122,6 +156,8 @@ export function ReelBriefPlanner() {
   const [assessment, setAssessment] = useState<AssessmentResult | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [requestError, setRequestError] = useState("");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const assessmentRef = useRef<HTMLElement>(null);
 
   const bodySeconds = Math.max(
     1,
@@ -166,6 +202,12 @@ export function ReelBriefPlanner() {
     };
   }, [brief]);
 
+  useEffect(() => {
+    if (!assessment) return;
+    assessmentRef.current?.focus({ preventScroll: true });
+    assessmentRef.current?.scrollIntoView({ block: "nearest" });
+  }, [assessment]);
+
   function updateOutput(nextOutput: number) {
     setBrief((current) => {
       const closeSeconds = Math.min(
@@ -191,6 +233,7 @@ export function ReelBriefPlanner() {
     event.preventDefault();
     setIsChecking(true);
     setRequestError("");
+    setCopyState("idle");
 
     try {
       const response = await fetch("/api/brief", {
@@ -212,6 +255,17 @@ export function ReelBriefPlanner() {
       );
     } finally {
       setIsChecking(false);
+    }
+  }
+
+  async function copyBrief() {
+    if (!assessment) return;
+
+    try {
+      await navigator.clipboard.writeText(formatBriefForClipboard(brief, assessment));
+      setCopyState("copied");
+    } catch {
+      setCopyState("error");
     }
   }
 
@@ -672,6 +726,8 @@ export function ReelBriefPlanner() {
               className="assessment-card"
               data-status={assessment.fitStatus}
               aria-labelledby="assessment-title"
+              ref={assessmentRef}
+              tabIndex={-1}
             >
               <p>Scope result</p>
               <h4 id="assessment-title">{assessment.fitLabel}</h4>
@@ -708,6 +764,25 @@ export function ReelBriefPlanner() {
               </div>
 
               <small>{assessment.disclaimer}</small>
+              <div className="assessment-actions">
+                <button className="button button-secondary" type="button" onClick={copyBrief}>
+                  {copyState === "copied"
+                    ? "Brief copied"
+                    : copyState === "error"
+                      ? "Copy unavailable"
+                      : "Copy brief"}
+                  <span aria-hidden="true">{copyState === "copied" ? "✓" : "⧉"}</span>
+                </button>
+                <a
+                  className="button button-primary"
+                  href={REEL_SERVICE_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Continue on Freelancer
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
             </section>
           )}
         </div>

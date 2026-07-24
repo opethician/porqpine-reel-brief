@@ -308,6 +308,18 @@ a {
   color: var(--acid);
 }
 
+.button-secondary {
+  min-width: 190px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line-bright);
+  background: transparent;
+  color: var(--paper);
+}
+
+.button-secondary:hover {
+  border-color: var(--acid);
+}
+
 .text-link {
   display: inline-flex;
   min-height: 44px;
@@ -1351,6 +1363,17 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.5;
 }
 
+.assessment-actions {
+  display: grid;
+  margin-top: 1.2rem;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 0.75rem;
+}
+
+.assessment-actions .button {
+  min-width: 0;
+}
+
 .process-section {
   border-bottom: 1px solid var(--line);
 }
@@ -1627,6 +1650,10 @@ input[type="range"]::-webkit-slider-thumb {
     width: 100%;
   }
 
+  .button-secondary {
+    width: 100%;
+  }
+
   .text-link {
     width: fit-content;
   }
@@ -1715,6 +1742,10 @@ input[type="range"]::-webkit-slider-thumb {
 
   .choice-card {
     min-height: 68px;
+  }
+
+  .assessment-actions {
+    grid-template-columns: 1fr;
   }
 
   .process-list article {

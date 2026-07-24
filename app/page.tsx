@@ -1,4 +1,5 @@
 import { ReelBriefPlanner } from "./components/ReelBriefPlanner";
+import { REEL_SERVICE_URL } from "@/lib/service";
 
 const scopeItems = [
   ["01", "One edit", "A single focused 9:16 vertical video."],
@@ -55,8 +56,13 @@ export default function Home() {
           <a href="#scope">Scope</a>
           <a href="#brief-planner">Plan your edit</a>
         </nav>
-        <a className="price-pill" href="#brief-planner">
-          <span>Fixed scope</span>
+        <a
+          className="price-pill"
+          href={REEL_SERVICE_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span>Order for</span>
           <strong>$10</strong>
         </a>
       </header>
@@ -81,12 +87,12 @@ export default function Home() {
                 <span aria-hidden="true">↘</span>
               </a>
               <a
-                className="text-link"
-                href="https://www.freelancer.com/service/video_editing/i-will-edit-your-vertical-short-video"
+                className="button button-secondary"
+                href={REEL_SERVICE_URL}
                 target="_blank"
                 rel="noreferrer"
               >
-                View service listing
+                Order the $10 edit
                 <span aria-hidden="true">↗</span>
               </a>
             </div>
@@ -246,8 +252,8 @@ export default function Home() {
           <br />
           One useful cut at a time.
         </p>
-        <a href="#top">
-          Back to top <span aria-hidden="true">↑</span>
+        <a href={REEL_SERVICE_URL} target="_blank" rel="noreferrer">
+          Order the $10 edit <span aria-hidden="true">↗</span>
         </a>
       </footer>
     </>

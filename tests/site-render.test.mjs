@@ -42,6 +42,11 @@ test("server-renders the finished portfolio surface", async () => {
   assert.match(html, /One focused vertical edit for \$10/);
   assert.match(html, /What \$10 does not include/);
   assert.match(html, /Nothing is uploaded or saved/);
+  assert.match(html, /Order the \$10 edit/);
+  assert.match(
+    html,
+    /https:\/\/www\.freelancer\.com\/service\/video_editing\/i-will-edit-your-vertical-short-video/,
+  );
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape/);
   assert.doesNotMatch(html, /react-loading-skeleton/);
 });
