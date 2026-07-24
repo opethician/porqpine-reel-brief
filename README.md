@@ -1,7 +1,8 @@
 # porQpine Reel Brief
 
-A polished, single-page scope companion for the porQpine vertical short video
-service. It presents the exact fixed-price package, lets a client plan a simple
+A polished, single-page scope companion for the porQpine
+[vertical short video service](https://www.freelancer.com/service/video_editing/i-will-edit-your-vertical-short-video).
+It presents the exact fixed-price package, lets a client plan a simple
 hook/core/close timeline, previews the brief in the browser, and checks the
 proposed work through a deterministic API.
 
